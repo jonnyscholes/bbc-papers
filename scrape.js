@@ -18,7 +18,7 @@
 
 
 var request = require('request');
-var cheerio = require('cheerio');
+var cheerio = require('cheerio');	
 var async = require('async');
 var fs = require('fs');
 var pg = require('pg');
@@ -44,17 +44,20 @@ var pg = require('pg');
 
 // var allUrls = JAUrls.concat(SMUrls);
 
-var naziUrl = 'http://www.britishnewspaperarchive.co.uk/search/results/1939-01-01/1940-05-31?basicsearch=nazi&somesearch=nazi&sortorder=score&page=';
+var naziUrl =   'http://www.britishnewspaperarchive.co.uk/search/results/1939-01-01/1940-05-31?basicsearch=nazi&somesearch=nazi&sortorder=score&page=';
 var naziPages = 2694;
+
+var germanUrl = 'http://www.britishnewspaperarchive.co.uk/search/results/1939-01-01/1940-05-31?basicsearch=%2bgerman&freesearch=german&sortorder=score&page=';
+var germanPages = 7775;
 
 var globalClient;
 var baseArticleTextUrl = 'http://www.britishnewspaperarchive.co.uk/tags/itemocr/BL/';
 var conString = "postgres://bbc:phatbeats@localhost:5432/bbcpapers";
 var addQuery = 'insert into articles (id, url, pub_date, newspaper, page_number, no_words, article_text, type, search_term) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)';
 
-var allUrls = new Array(naziPages+1)
+var allUrls = new Array(germanPages+1)
     .join().split(',')
-    .map(function(item, index){ return naziUrl + index++;});
+    .map(function(item, index){ return germanUrl + index++;});
 
 var testUrl = naziUrl+'0';
 
@@ -108,7 +111,7 @@ function handleArticle(url, id, pub_date, newspaper, page_number, no_words, type
 			return obj['LineText'];
 		}).join(';;').replace(/\s{2,}/g, ' ');
 
-		globalClient.query(addQuery, [id, url, pub_date, newspaper, page_number, no_words, article_text, type, 'nazi'], function(err, result) {
+		globalClient.query(addQuery, [id, url, pub_date, newspaper, page_number, no_words, article_text, type, 'german'], function(err, result) {
 			if(err) throw err;
 
 			if(asyncCallback){
